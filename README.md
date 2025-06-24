@@ -35,3 +35,5 @@ npm run dist
 ```
 
 💡 Certifique-se que rodou o bash como administrador, essa parte pode falhar pois o projeto pode entender que ele não tem as permissões necessárias
+
+O executável estará na pasta dist/win-unpacked.
