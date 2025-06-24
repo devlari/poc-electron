@@ -1,34 +1,37 @@
-# poc
+# POC - ElectronJS + Vite + Typescript + React
 
-An Electron application with React and TypeScript
+Criando projeto de teste para criação de apps desktop usando ElectronJS. Teste com libs do React (como react-router-dom e MUI), gerando build sem necessidade de instalação.
 
-## Recommended IDE Setup
+## Etapas pra execução
 
-- [VSCode](https://code.visualstudio.com/) + [ESLint](https://marketplace.visualstudio.com/items?itemName=dbaeumer.vscode-eslint) + [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)
-
-## Project Setup
-
-### Install
+1. Clonar este projeto
 
 ```bash
-$ npm install
+git clone https://github.com/devlari/poc-electron
 ```
 
-### Development
+2. Acesse a pasta do projeto
 
 ```bash
-$ npm run dev
+cd poc-electron
 ```
 
-### Build
+3. Instalar as dependências necessárias
 
 ```bash
-# For windows
-$ npm run build:win
-
-# For macOS
-$ npm run build:mac
-
-# For Linux
-$ npm run build:linux
+npm install
 ```
+
+4.1. Rodar o projeto como ambiente de desenvolvimento
+
+```bash
+npm run dev
+```
+
+4.2. Buildar o projeto <br/>
+
+```bash
+npm run dist
+```
+
+💡 Certifique-se que rodou o bash como administrador, essa parte pode falhar pois o projeto pode entender que ele não tem as permissões necessárias
