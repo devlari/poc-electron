@@ -6,13 +6,7 @@ let connection: oracledb.Connection | null = null
 export async function connectToOracle(config: OracleConnectionConfig): Promise<void> {
   oracledb.initOracleClient({ libDir: 'C:\\devtools\\instantclient64' })
 
-  const connectString = `${config.host}:${config.port}/${config.serviceName}`
-
-  connection = await oracledb.getConnection({
-    user: config.user,
-    password: config.password,
-    connectString
-  })
+  connection = await oracledb.getConnection(config)
 
   await connection.execute('SELECT 1 FROM DUAL')
 }
