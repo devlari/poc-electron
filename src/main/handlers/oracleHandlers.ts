@@ -5,6 +5,8 @@ import type { OracleConnectionConfig } from '../../types/db'
 let dbConfig: OracleConnectionConfig
 
 export function registerOracleHandlers() {
+  const [, user, host, connectValue, password] = process.argv
+
   ipcMain.handle('oracle-connect', async (_event, config: OracleConnectionConfig) => {
     try {
       await connectToOracle(config)
@@ -32,5 +34,14 @@ export function registerOracleHandlers() {
 
   ipcMain.handle('save-db-config', (_event, config: OracleConnectionConfig) => {
     dbConfig = config
+  })
+
+  ipcMain.handle('get-oracle-args', () => {
+    return {
+      user,
+      host,
+      connectValue,
+      password
+    }
   })
 }

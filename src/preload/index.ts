@@ -19,7 +19,8 @@ if (process.contextIsolated) {
       saveDbConfig: (config: OracleConnectionConfig) =>
         ipcRenderer.invoke('save-db-config', config),
       getDbConfig: () => ipcRenderer.invoke('get-db-config'),
-      runQuery: (sql: string) => ipcRenderer.invoke('oracle-query', sql)
+      runQuery: (sql: string) => ipcRenderer.invoke('oracle-query', sql),
+      getOracleArgs: () => ipcRenderer.invoke('get-oracle-args')
     })
   } catch (error) {
     console.error(error)

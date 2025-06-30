@@ -1,33 +1,50 @@
-import { Box, Button, Typography, Paper } from '@mui/material'
-import { useState } from 'react'
+import { Box, Typography, Paper } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export function ConexaoPage(): React.JSX.Element {
-  // const [formData, setFormData] = useState<OracleConnectionConfig>({
-  //   host: '',
-  //   port: null,
-  //   serviceName: '',
-  //   user: '',
-  //   password: ''
-  // })
   const [isLoading, setIsLoading] = useState(false)
+  const [oracleArgs, setOracleArgs] = useState({
+    user: '',
+    host: '',
+    connectValue: '',
+    password: ''
+  })
   const navigate = useNavigate()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
-
-    try {
-      alert('Conexão bem-sucedida!')
-      navigate('/consulta')
-    } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Erro desconhecido ao executar a operação'
-      alert(`Erro ao executar operação no banco: ${errorMessage}`)
-    } finally {
-      setIsLoading(false)
-    }
+  async function getOracleArgs() {
+    return await window.electron.ipcRenderer.invoke('get-oracle-args')
   }
+
+  useEffect(() => {
+    const testarConexao = async () => {
+      setIsLoading(true)
+      try {
+        const args = await getOracleArgs()
+        setOracleArgs(args)
+
+        const result = await window.electron.ipcRenderer.invoke('oracle-connect', {
+          user: args.user,
+          password: args.password,
+          connectString: `${args.host}/${args.connectValue}`
+        })
+
+        if (result.success) {
+          alert('✅ Conexão bem-sucedida!')
+          navigate('/consulta')
+        } else {
+          alert(`❌ Erro ao conectar: ${result}`)
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : 'Erro desconhecido'
+        alert(`❌ Erro inesperado: ${msg}`)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    testarConexao()
+  }, [])
 
   return (
     <Box
@@ -40,21 +57,10 @@ export function ConexaoPage(): React.JSX.Element {
     >
       <Paper elevation={3} sx={{ p: 4, maxWidth: 500, width: '100%' }}>
         <Typography variant="h5" gutterBottom>
-          Conexão ao banco de dados
+          Conectando ao banco... user: {oracleArgs.user}, host: {oracleArgs.host}, SID:{' '}
+          {oracleArgs.connectValue}, password: {oracleArgs.password}
         </Typography>
-        <form onSubmit={handleSubmit}>
-          <Box mt={3} sx={{ position: 'relative' }}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              disabled={isLoading}
-            >
-              {isLoading ? 'Conectando...' : 'Testar conexão'}
-            </Button>
-          </Box>
-        </form>
+        {isLoading && <Typography>Verificando conexão, aguarde...</Typography>}
       </Paper>
     </Box>
   )

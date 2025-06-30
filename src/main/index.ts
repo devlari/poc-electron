@@ -3,8 +3,6 @@ import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { registerOracleHandlers } from './handlers/oracleHandlers'
-import { buildOracleConnectString } from './handlers/buildOracleConnectString'
-import { connectToOracle } from './services/oracle'
 
 function createWindow(): void {
   // Create the browser window.
@@ -43,23 +41,6 @@ function createWindow(): void {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   registerOracleHandlers()
-
-  const [, , user, host, connectValue, password] = process.argv
-
-  if (user && host && connectValue && password) {
-    const connectString = buildOracleConnectString({
-      host,
-      port: 1521,
-      mode: 'SID',
-      value: connectValue
-    })
-    connectToOracle({ user, password, connectString })
-      .then(() => console.log('Conectado com sucesso ao Oracle'))
-      .catch((err) => {
-        console.error('Erro ao conectar ao Oracle:', err)
-        // aqui você pode notificar a renderer via IPC se quiser
-      })
-  }
 
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
