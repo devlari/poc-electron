@@ -5,6 +5,7 @@ import type { OracleConnectionConfig } from '../../types/db'
 let dbConfig: OracleConnectionConfig
 
 export function registerOracleHandlers() {
+  const dev = process.env.NODE_ENV === 'development'
   const [, user, host, connectValue, password] = process.argv
 
   ipcMain.handle('oracle-connect', async (_event, config: OracleConnectionConfig) => {
@@ -37,6 +38,14 @@ export function registerOracleHandlers() {
   })
 
   ipcMain.handle('get-oracle-args', () => {
+    if (dev) {
+      return {
+        user: 'prounion',
+        host: '172.19.43.154',
+        connectValue: 'XE',
+        password: 'prounion'
+      }
+    }
     return {
       user,
       host,

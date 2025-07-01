@@ -57,8 +57,8 @@ export function ConexaoPage(): React.JSX.Element {
     >
       <Paper elevation={3} sx={{ p: 4, maxWidth: 500, width: '100%' }}>
         <Typography variant="h5" gutterBottom>
-          Conectando ao banco... user: {oracleArgs.user}, host: {oracleArgs.host}, SID:{' '}
-          {oracleArgs.connectValue}, password: {oracleArgs.password}
+          Conectando ao banco... user: {oracleArgs.user}, host: {oracleArgs.host}, connectValue:{' '}
+          {oracleArgs.connectValue}
         </Typography>
         {isLoading && <Typography>Verificando conexão, aguarde...</Typography>}
       </Paper>

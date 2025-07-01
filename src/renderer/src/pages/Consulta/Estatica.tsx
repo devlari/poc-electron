@@ -1,18 +1,14 @@
-import { useEffect, useState } from 'react'
 import {
-  Box,
-  CircularProgress,
-  Container,
+  TableContainer,
   Paper,
   Table,
-  TableBody,
-  TableCell,
-  TableContainer,
   TableHead,
   TableRow,
-  Typography,
-  Alert
+  TableCell,
+  TableBody,
+  Box
 } from '@mui/material'
+import { useEffect, useState } from 'react'
 
 type Cliente = {
   CODCLI: string
@@ -20,7 +16,7 @@ type Cliente = {
   ENDERCOB: string
 }
 
-export function ConsultaPage(): React.JSX.Element {
+export function ConsultaEstaticaPage(): React.JSX.Element {
   const [clientes, setClientes] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
   const [erro, setErro] = useState<string | null>(null)
@@ -54,18 +50,19 @@ export function ConsultaPage(): React.JSX.Element {
   }, [])
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Consulta ao banco de dados
-      </Typography>
-
-      {loading ? (
-        <Box display="flex" justifyContent="center" mt={4}>
-          <CircularProgress />
-        </Box>
-      ) : erro ? (
-        <Alert severity="error">{erro}</Alert>
-      ) : (
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        p: 4,
+        boxSizing: 'border-box'
+      }}
+    >
+      {loading && <div>Carregando...</div>}
+      {erro && <div style={{ color: 'red' }}>Erro: {erro}</div>}
+      {!erro && clientes.length === 0 && <div>Nenhum cliente encontrado.</div>}
+      {clientes.length > 0 && (
         <TableContainer component={Paper}>
           <Table>
             <TableHead>
@@ -93,6 +90,6 @@ export function ConsultaPage(): React.JSX.Element {
           </Table>
         </TableContainer>
       )}
-    </Container>
+    </Box>
   )
 }

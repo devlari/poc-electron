@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import { ConexaoPage } from '../pages/Conexao'
-import { ConsultaPage } from '@renderer/pages/Consulta'
+import { ConsultaPage } from '../pages/Consulta'
 
 export default function AppRoutes() {
   return (
