@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Box, Container, Typography, Tabs, Tab } from '@mui/material'
+import { Box, Tabs, Tab } from '@mui/material'
 import { TabPanel } from '@renderer/components/TabPanel'
 import { ConsultaPersonalizadaPage } from './Personalizada'
 import { ConsultaEstaticaPage } from './Estatica'
@@ -23,10 +23,6 @@ export function ConsultaPage(): React.JSX.Element {
         boxSizing: 'border-box'
       }}
     >
-      <Typography variant="h4" gutterBottom>
-        Consulta ao banco de dados
-      </Typography>
-
       <Box display="flex" flexDirection="column" alignItems="flex-start" mt={4}>
         <Tabs value={valueTab} onChange={handleChangeTab} aria-label="Abas">
           <Tab label="Consulta personalizada" />

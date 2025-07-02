@@ -1,51 +1,44 @@
-import { Box, Typography, Paper } from '@mui/material'
-import { useEffect, useState } from 'react'
+import { Box, Typography, Paper, Button, Stack } from '@mui/material'
+import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 
 export function ConexaoPage(): React.JSX.Element {
   const [isLoading, setIsLoading] = useState(false)
-  const [oracleArgs, setOracleArgs] = useState({
-    user: '',
-    host: '',
-    connectValue: '',
-    password: ''
-  })
   const navigate = useNavigate()
 
   async function getOracleArgs() {
     return await window.electron.ipcRenderer.invoke('get-oracle-args')
   }
 
-  useEffect(() => {
-    const testarConexao = async () => {
-      setIsLoading(true)
-      try {
-        const args = await getOracleArgs()
-        setOracleArgs(args)
+  async function testarConexao() {
+    setIsLoading(true)
+    try {
+      const args = await getOracleArgs()
 
-        const result = await window.electron.ipcRenderer.invoke('oracle-connect', {
-          user: args.user,
-          password: args.password,
-          connectString: `${args.host}/${args.connectValue}`
-        })
+      const result = await window.electron.ipcRenderer.invoke('oracle-connect', {
+        user: args.user,
+        password: args.password,
+        connectString: `${args.host}/${args.connectValue}`
+      })
 
-        if (result.success) {
-          alert('✅ Conexão bem-sucedida!')
-          navigate('/consulta')
-        } else {
-          alert(`❌ Erro ao conectar: ${result}`)
-        }
-      } catch (err) {
-        const msg = err instanceof Error ? err.message : 'Erro desconhecido'
-        alert(`❌ Erro inesperado: ${msg}`)
-      } finally {
-        setIsLoading(false)
+      if (result.success) {
+        alert('Conexão bem-sucedida!')
+        navigate('/consulta')
+      } else {
+        alert(`Erro ao conectar: ${result.error || 'Erro desconhecido'}`)
       }
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Erro inesperado'
+      alert(`Erro inesperado: ${msg}`)
+    } finally {
+      setIsLoading(false)
     }
+  }
 
-    testarConexao()
-  }, [])
-
+  async function limparParametros() {
+    await window.electron.ipcRenderer.invoke('clear-db-config')
+    alert('Parâmetros limpos com sucesso!')
+  }
   return (
     <Box
       sx={{
@@ -56,11 +49,15 @@ export function ConexaoPage(): React.JSX.Element {
       }}
     >
       <Paper elevation={3} sx={{ p: 4, maxWidth: 500, width: '100%' }}>
-        <Typography variant="h5" gutterBottom>
-          Conectando ao banco... user: {oracleArgs.user}, host: {oracleArgs.host}, connectValue:{' '}
-          {oracleArgs.connectValue}
-        </Typography>
-        {isLoading && <Typography>Verificando conexão, aguarde...</Typography>}
+        <Stack spacing={2} direction="row" mt={4}>
+          <Button variant="contained" onClick={testarConexao} disabled={isLoading}>
+            Testar conexão
+          </Button>
+          <Button variant="outlined" color="error" onClick={limparParametros} disabled={isLoading}>
+            Limpar parâmetros
+          </Button>
+        </Stack>
+        {isLoading && <Typography mt={2}>Verificando conexão, aguarde...</Typography>}
       </Paper>
     </Box>
   )

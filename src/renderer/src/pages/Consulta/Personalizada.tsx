@@ -62,7 +62,7 @@ export function ConsultaPersonalizadaPage(): React.JSX.Element {
 
       <TextareaAutosize
         minRows={5}
-        style={{ width: '100%', marginBottom: '1rem' }}
+        style={{ width: '600px', marginBottom: '1rem' }}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
         placeholder="Digite sua consulta SQL aqui..."

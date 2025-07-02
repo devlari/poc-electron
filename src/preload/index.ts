@@ -20,7 +20,8 @@ if (process.contextIsolated) {
         ipcRenderer.invoke('save-db-config', config),
       getDbConfig: () => ipcRenderer.invoke('get-db-config'),
       runQuery: (sql: string) => ipcRenderer.invoke('oracle-query', sql),
-      getOracleArgs: () => ipcRenderer.invoke('get-oracle-args')
+      getOracleArgs: () => ipcRenderer.invoke('get-oracle-args'),
+      clearDbConfig: () => ipcRenderer.invoke('clear-db-config')
     })
   } catch (error) {
     console.error(error)
