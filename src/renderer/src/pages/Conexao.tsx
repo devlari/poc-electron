@@ -1,49 +1,44 @@
-import { Box, TextField, Button, Typography, Paper, Grid } from '@mui/material'
+import { Box, Typography, Paper, Button, Stack } from '@mui/material'
 import { useState } from 'react'
-import type { OracleConnectionConfig } from '../../../types/db'
 import { useNavigate } from 'react-router-dom'
 
 export function ConexaoPage(): React.JSX.Element {
-  const [formData, setFormData] = useState<OracleConnectionConfig>({
-    host: '',
-    port: null,
-    serviceName: '',
-    user: '',
-    password: ''
-  })
   const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({ ...prev, [name]: value }))
+  async function getOracleArgs() {
+    return await window.electron.ipcRenderer.invoke('get-oracle-args')
   }
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
+  async function testarConexao() {
     setIsLoading(true)
-
     try {
-      const conn = await window.customAPI.connectToOracle(formData)
+      const args = await getOracleArgs()
 
-      if (!conn.success) {
-        alert(conn.error || 'Erro desconhecido ao conectar ao banco de dados')
-        return
+      const result = await window.electron.ipcRenderer.invoke('oracle-connect', {
+        user: args.user,
+        password: args.password,
+        connectString: `${args.host}/${args.connectValue}`
+      })
+
+      if (result.success) {
+        alert('Conexão bem-sucedida!')
+        navigate('/consulta')
+      } else {
+        alert(`Erro ao conectar: ${result.error || 'Erro desconhecido'}`)
       }
-
-      window.customAPI.saveDbConfig(formData)
-
-      alert('Conexão bem-sucedida!')
-      navigate('/consulta')
     } catch (err) {
-      const errorMessage =
-        err instanceof Error ? err.message : 'Erro desconhecido ao executar a operação'
-      alert(`Erro ao executar operação no banco: ${errorMessage}`)
+      const msg = err instanceof Error ? err.message : 'Erro inesperado'
+      alert(`Erro inesperado: ${msg}`)
     } finally {
       setIsLoading(false)
     }
   }
 
+  async function limparParametros() {
+    await window.electron.ipcRenderer.invoke('clear-db-config')
+    alert('Parâmetros limpos com sucesso!')
+  }
   return (
     <Box
       sx={{
@@ -54,71 +49,15 @@ export function ConexaoPage(): React.JSX.Element {
       }}
     >
       <Paper elevation={3} sx={{ p: 4, maxWidth: 500, width: '100%' }}>
-        <Typography variant="h5" gutterBottom>
-          Conexão ao banco de dados
-        </Typography>
-        <form onSubmit={handleSubmit}>
-          <Grid container spacing={2}>
-            <TextField
-              label="Host"
-              name="host"
-              value={formData.host}
-              onChange={handleChange}
-              disabled={isLoading}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Porta"
-              name="port"
-              value={formData.port || ''}
-              onChange={handleChange}
-              disabled={isLoading}
-              fullWidth
-              required
-              type="number"
-            />
-            <TextField
-              label="Service Name ou SID"
-              name="serviceName"
-              value={formData.serviceName}
-              onChange={handleChange}
-              disabled={isLoading}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Usuário"
-              name="user"
-              value={formData.user}
-              onChange={handleChange}
-              disabled={isLoading}
-              fullWidth
-              required
-            />
-            <TextField
-              label="Senha"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              disabled={isLoading}
-              fullWidth
-              required
-              type="password"
-            />
-          </Grid>
-          <Box mt={3} sx={{ position: 'relative' }}>
-            <Button
-              type="submit"
-              variant="contained"
-              color="primary"
-              fullWidth
-              disabled={isLoading}
-            >
-              {isLoading ? 'Conectando...' : 'Conectar'}
-            </Button>
-          </Box>
-        </form>
+        <Stack spacing={2} direction="row" mt={4}>
+          <Button variant="contained" onClick={testarConexao} disabled={isLoading}>
+            Testar conexão
+          </Button>
+          <Button variant="outlined" color="error" onClick={limparParametros} disabled={isLoading}>
+            Limpar parâmetros
+          </Button>
+        </Stack>
+        {isLoading && <Typography mt={2}>Verificando conexão, aguarde...</Typography>}
       </Paper>
     </Box>
   )

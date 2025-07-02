@@ -1,11 +1,12 @@
+import Store from 'electron-store'
 import type { OracleConnectionConfig } from '../../types/db'
 
-let dbConfig: OracleConnectionConfig | null = null
+const encryptionKey = 'fcbf2d66-2556-41fc-b387-f42aecf3dca2'
 
-export function setDbConfig(config: OracleConnectionConfig) {
-  dbConfig = config
+type Schema = {
+  oracleConfig: OracleConnectionConfig
 }
 
-export function getDbConfig(): OracleConnectionConfig | null {
-  return dbConfig
-}
+export const dbConfigStore = new Store<Schema>({
+  encryptionKey
+})

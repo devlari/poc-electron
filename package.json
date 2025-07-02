@@ -13,13 +13,14 @@
     "typecheck": "npm run typecheck:node && npm run typecheck:web",
     "start": "electron-vite preview",
     "dev": "electron-vite dev",
-    "build": "npm run typecheck && electron-vite build",
+    "build": "npm run clean && npm run typecheck && electron-vite build",
     "postinstall": "electron-builder install-app-deps",
     "build:unpack": "npm run build && electron-builder --dir",
     "build:win": "npm run build && electron-builder --win",
     "build:mac": "electron-vite build && electron-builder --mac",
     "build:linux": "electron-vite build && electron-builder --linux",
-    "dist": "npm run build && electron-builder"
+    "dist": "npm run build && electron-builder",
+    "clean": "rimraf dist build out"
   },
   "dependencies": {
     "@electron-toolkit/preload": "^3.0.1",
@@ -27,6 +28,7 @@
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
     "@mui/material": "^7.1.1",
+    "electron-store": "^8.2.0",
     "electron-updater": "^6.3.9",
     "oracledb": "^6.8.0",
     "react-router-dom": "^7.6.2"
@@ -49,6 +51,7 @@
     "prettier": "^3.5.3",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "rimraf": "^6.0.1",
     "typescript": "^5.8.3",
     "vite": "^6.2.6"
   },
@@ -66,7 +69,6 @@
     },
     "win": {
       "target": [
-        "nsis",
         "portable"
       ],
       "icon": "assets/icon.ico"
